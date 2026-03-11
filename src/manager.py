@@ -88,3 +88,12 @@ class Manager:
     def calculate_tax(self, year: int, month: int, tax_rate: float) -> float:
         total_income = sum([transfer.amount_pln for transfer in self.transfers if transfer.settlement_year == year and transfer.settlement_month == month])
         return round(total_income * tax_rate, 0)
+    
+    def check_deposits(self) -> float:
+        total_deposits = 0.0
+        total_due = 0.0
+        for tenant_key, tenant in self.tenants.items():
+            total_deposits += sum([transfer.amount_pln for transfer in self.transfers if self.tenants[transfer.tenant].name == tenant.name and transfer.type == 'deposit'])
+            total_due += tenant.deposit_pln
+        
+        return total_deposits - total_due

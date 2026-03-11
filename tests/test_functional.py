@@ -1,4 +1,4 @@
-from src.models import Parameters, TenantSettlement, ApartmentSettlement
+from src.models import Parameters, TenantSettlement, ApartmentSettlement, Transfer
 from src.manager import Manager
 
 
@@ -31,3 +31,21 @@ def test_tax_calculation():
 
     tax = manager.calculate_tax(2025, 2, 0.085)
     assert tax == 0
+
+def test_deposits_calculation():
+    manager = Manager(Parameters())
+    
+    deposit_balance = manager.check_deposits()
+    assert deposit_balance == -8700.0 # no deposit in transfers
+
+    manager.transfers.append(Transfer(
+        tenant='tenant-1',
+        date='2025-01-01',
+        settlement_year=None,
+        settlement_month=None,
+        amount_pln=1000.0,
+        type='deposit'
+    ))
+
+    deposit_balance = manager.check_deposits()
+    assert deposit_balance == -7700.0 # 1000.0 deposit in transfers
